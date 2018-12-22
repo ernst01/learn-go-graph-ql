@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func sendSuccess(w http.ResponseWriter, status int, data interface{}) {
+func sendResponse(w http.ResponseWriter, status int, data interface{}) {
 	var buf bytes.Buffer
 
 	if nil != data {

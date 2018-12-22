@@ -1,0 +1,17 @@
+version: "3.5"
+
+services:
+
+  songlist:
+    container_name: songlist-backend
+    image: golang:1.11.0-alpine
+    volumes:
+     - .:/go/src/github.com/ernst01/learn-go-graph-ql
+    working_dir: /go/src/github.com/ernst01/learn-go-graph-ql
+    command: go run cmd/songlist/songlist.go
+    env_file:
+      - ./.env
+    ports:
+    - "8080:8080"
+    expose:
+      - "8080"

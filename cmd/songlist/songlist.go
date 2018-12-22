@@ -1,48 +1,18 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/graphql-go/graphql"
 
 	"github.com/ernst01/learn-go-graph-ql/internal/songlist"
 )
 
 func main() {
-
-	// Schema
-	fields := graphql.Fields{
-		"hello": &graphql.Field{
-			Type: graphql.String,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return "world", nil
-			},
-		},
-	}
-	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}
-	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery)}
-	schema, err := graphql.NewSchema(schemaConfig)
-	if err != nil {
-		log.Fatalf("failed to create new schema, error: %v", err)
-	}
-
-	// Query
-	query := `
-		{
-			hello
-		}
-	`
-	params := graphql.Params{Schema: schema, RequestString: query}
-	r := graphql.Do(params)
-	if len(r.Errors) > 0 {
-		log.Fatalf("failed to execute graphql operation, errors: %+v", r.Errors)
-	}
-	rJSON, _ := json.Marshal(r)
-	fmt.Printf("%s \n", rJSON)
 
 	srv := songlist.Server{
 		Router: mux.NewRouter(),
@@ -50,7 +20,15 @@ func main() {
 
 	srv.Routes()
 
+	srv.InitGraphQL()
+
 	http.Handle("/", srv.Router)
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	port := 8080
+
+	if portStr := os.Getenv("APP_PORT"); portStr != "" {
+		port, _ = strconv.Atoi(portStr)
+	}
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), nil))
 }

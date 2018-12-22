@@ -6,4 +6,8 @@ func (s *Server) Routes() {
 		Methods("GET").
 		Name("get-api-info").
 		HandlerFunc(s.appVersion())
+	s.Router.Path("/v1/songlist").
+		Methods("GET").
+		Name("v1-get-songlist").
+		HandlerFunc(s.readSonglistHandler())
 }
